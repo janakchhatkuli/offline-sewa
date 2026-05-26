@@ -1,14 +1,18 @@
-"""Alembic env. Wire to app metadata in Block 2."""
+"""Alembic env — wired to all ORM models for autogenerate support."""
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+# Import models so their tables are registered on Base.metadata
+import app.models  # noqa: F401
+from app.db.base import Base
+
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = None  # set to Base.metadata in Block 2
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
