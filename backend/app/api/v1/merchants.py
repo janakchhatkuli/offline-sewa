@@ -7,6 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.models.merchant import Merchant
 from app.schemas.merchant import MerchantCreate, MerchantRead
+from app.schemas.sms import SettleResponse
+from app.services import settlement_service
+from app.services.settlement_service import SettlementError
 
 router = APIRouter()
 
@@ -48,6 +51,15 @@ async def get_merchant(
     return MerchantRead.model_validate(merchant)
 
 
-@router.post("/{merchant_id}/settle")
-async def settle(merchant_id: str):
-    return {"todo": "Block 3B: settlement", "merchant_id": merchant_id}
+@router.post("/{merchant_id}/settle", response_model=SettleResponse)
+async def settle(
+    merchant_id: str, db: AsyncSession = Depends(get_db)
+) -> SettleResponse:
+    try:
+        result = await settlement_service.settle_merchant(db, merchant_id)
+    except SettlementError as e:
+        raise HTTPException(
+            status_code=e.http_status,
+            detail={"error": e.code, "detail": str(e)},
+        )
+    return SettleResponse(**result)

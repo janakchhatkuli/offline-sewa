@@ -77,3 +77,63 @@ All Block 3A errors use FastAPI's standard envelope with a structured detail:
 ```json
 { "detail": { "error": "insufficient_balance", "detail": "offline balance is insufficient" } }
 ```
+
+---
+
+## Block 3B — SMS & settlement
+
+### POST `/sms/confirm-payment`
+
+Webhook hit by the SMS provider when a merchant forwards a customer's QR
+string. The body must contain a valid `v1.<body>.<sig>` payload (optionally
+prefixed, e.g. `PAY v1...`). The merchant is identified by the `from`
+phone number.
+
+Request:
+```json
+{ "from": "+9779800000002", "text": "PAY v1.<body>.<sig>", "message_id": "abc" }
+```
+
+Response `200`:
+```json
+{
+  "transaction_id": "TXN1A2B3C4D",
+  "status": "pending_settlement",
+  "customer_id": "cust_test01",
+  "merchant_id": "merch_test01",
+  "amount": "75.00",
+  "nonce": "f3b1...",
+  "created_at": "2026-05-28T10:02:00Z",
+  "sms_sent": true
+}
+```
+
+Errors: `404 merchant_not_found` (unknown sender) · `400 malformed_sms`
+(no QR payload found) · plus every `verify-offline-qr` error
+(`401 invalid_signature`, `409 nonce_already_used`, `410 expired_qr`, …).
+
+### POST `/merchants/{merchant_id}/settle`
+
+Atomically settles every `pending_settlement` transaction for the merchant:
+- each row is flipped to `settled` with `settled_at = now`
+- the merchant's `pending_settlement` total moves into `settled_balance`
+
+Response `200`:
+```json
+{
+  "merchant_id": "merch_test01",
+  "settled_count": 2,
+  "settled_amount": "75.50",
+  "pending_settlement": "0.00",
+  "settled_balance": "75.50",
+  "settled_at": "2026-05-28T10:05:00Z"
+}
+```
+
+Errors: `404 not_found` · `409 nothing_to_settle`.
+
+### SMS provider
+
+`SMS_PROVIDER=sparrow` is the default. If `SPARROW_API_KEY` is empty (dev
+mode), `sms_service.send_sms` becomes a no-op that logs the message —
+the webhook still returns `sms_sent: true`.

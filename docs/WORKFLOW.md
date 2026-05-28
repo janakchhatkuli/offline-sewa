@@ -32,9 +32,10 @@ Endpoint names and responsibilities stay the same; only the implementation tech 
 - `GET  /api/v1/merchants/{id}`
 
 ### Block 3B — SMS integration
-- `POST /api/v1/sms/confirm-payment` (webhook)
-- Nonce double-spend prevention
-- `POST /api/v1/merchants/{id}/settle`
+- [x] `POST /api/v1/sms/confirm-payment` (webhook) — parses inbound SMS, identifies merchant by sender phone, verifies QR via `qr_service`, sends confirmation SMS back (Sparrow stub).
+- [x] Nonce double-spend prevention reused from Block 3A (same `verify_offline_qr` path).
+- [x] `POST /api/v1/merchants/{id}/settle` — moves `pending_settlement` → `settled_balance` and flips all matching `offline_transactions` rows to `settled` atomically.
+- [x] Tests: `backend/tests/test_sms.py` (11 cases — parsing, webhook happy/error paths, replay, settlement).
 
 ### Block 4 — Customer Flutter app
 - Login / pick customer
