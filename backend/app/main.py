@@ -1,12 +1,14 @@
 """FastAPI application entrypoint.
 
 Wire routers, middleware, and startup/shutdown events here.
-Implementation lands in Block 1 of the workflow.
 """
 from fastapi import FastAPI
 
 from app.core.config import settings
 from app.api.v1 import api_router
+from app.db.base import Base
+from app.db.session import engine
+from app import models  # noqa: F401  ensure model metadata is registered
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -14,6 +16,13 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+
+@app.on_event("startup")
+async def _dev_create_tables() -> None:
+    if settings.APP_ENV == "development":
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
 
 @app.get("/health", tags=["health"])
