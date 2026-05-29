@@ -2,7 +2,9 @@
 library sewa_core;
 
 export 'src/api/api_client.dart';
+export 'src/api/api_exception.dart';
 export 'src/api/endpoints.dart';
+export 'src/models/auth.dart';
 export 'src/models/customer.dart';
 export 'src/models/merchant.dart';
 export 'src/models/transaction.dart';

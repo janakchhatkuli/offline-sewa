@@ -12,6 +12,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   mobile_scanner: ^5.2.3
+  file_picker: ^8.1.2
+  shared_preferences: ^2.3.2
+  intl: ^0.19.0
+  url_launcher: ^6.3.0
   sewa_core:
     path: ../packages/sewa_core
 

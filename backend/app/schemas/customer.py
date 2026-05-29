@@ -31,6 +31,11 @@ class CustomerRead(BaseModel):
     updated_at: datetime
 
 
+class CustomerTopUp(BaseModel):
+    amount: Decimal = Field(..., gt=0, max_digits=12, decimal_places=2)
+    target: Literal["online", "offline"] = "offline"
+
+
 class CustomerRegister(BaseModel):
     """Registration payload for a new customer account."""
 

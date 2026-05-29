@@ -41,7 +41,11 @@ See [docs/WORKFLOW.md](docs/WORKFLOW.md) for the full block-by-block plan.
 | 4 | Customer Flutter app | ☐ |
 | 5 | Shopkeeper Flutter app | ☐ |
 | 6 | Admin dashboard | ☐ |
-| 7 | Integration testing | ☐ |
+| 7 | Integration testing # Easiest via winget
+winget install --id=Flutter.Flutter -e
+# then open a NEW terminal so PATH refreshes
+flutter --version
+flutter doctor| ☐ |
 | 8 | Deployment | ☐ |
 | 9 | Hardware (ESP32) — phase 2 | ☐ |
 
