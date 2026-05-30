@@ -3,6 +3,7 @@ import 'package:sewa_core/sewa_core.dart';
 
 import '../../app.dart';
 import 'register_screen.dart';
+import 'server_settings_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,7 +49,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Shopkeeper sign in')),
+      appBar: AppBar(
+        title: const Text('Shopkeeper sign in'),
+        actions: [
+          IconButton(
+            tooltip: 'Server URL',
+            icon: const Icon(Icons.dns_outlined),
+            onPressed: _busy
+                ? null
+                : () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ServerSettingsScreen(
+                        api: SessionScope.of(context).repository.api,
+                      ),
+                    )),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),

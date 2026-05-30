@@ -8,6 +8,7 @@ import 'src/config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppConfig.load();
   final session = await AuthSession.load();
   final api = ApiClient(
     baseUrl: AppConfig.apiBaseUrl,
